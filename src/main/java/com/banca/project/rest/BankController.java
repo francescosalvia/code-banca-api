@@ -1,5 +1,6 @@
 package com.banca.project.rest;
 
+import com.banca.project.dto.request.BonificoRequestDto;
 import com.banca.project.dto.response.PayloadTransactionsResponse;
 import com.banca.project.exception.*;
 import com.banca.project.service.RestService;
@@ -10,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -91,17 +93,23 @@ public class BankController {
     }
   }
 
-  @GetMapping(value = "bonifico")
+  @PostMapping(value = "bonifico")
   @ApiOperation(value = "post bonifico by account id")
-  public ResponseEntity postBonifico(@RequestParam String accountId) {
+  public ResponseEntity postBonifico(
+      @RequestParam String accountId, @Valid @RequestBody BonificoRequestDto bonificoRequestDto) {
 
-    log.info("Request bonifico for accountId -> [{}]", accountId);
+    log.info(
+        "Request bonifico for accountId -> [{}] and bonificoRequest -> [{}]",
+        accountId,
+        bonificoRequestDto);
 
     try {
 
       restService.checkIdCustomer(accountId);
 
       String iban = restService.getAccountInfo(accountId);
+
+      // restService.postBonifico(accountId, iban, creditorRequestDto);
 
       return ResponseEntity.ok().body("");
     } catch (CustomerIdNotCorrectlyException e) {

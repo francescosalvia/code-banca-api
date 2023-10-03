@@ -1,6 +1,7 @@
 package com.banca.project.service;
 
 import com.banca.project.config.SandboxConfig;
+import com.banca.project.dto.request.BonificoRequestDto;
 import com.banca.project.dto.response.PayloadTransactionsResponse;
 import com.banca.project.entity.Transaction;
 import com.banca.project.exception.*;
@@ -155,12 +156,7 @@ public class RestService {
       throws GetBalanceNullException, GetBalanceBadRequestException, SandboxInternalErrorException,
           CustomerIdNotCorrectlyException {
 
-    RestTemplate restTemplate = new RestTemplate();
-
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    headers.set(AUTH_SCHEMA, config.getAuthSchema());
-    headers.set(API_KEY, config.getApiKey());
+    HttpHeaders headers = createHeader();
 
     final String url =
         UriComponentsBuilder.fromHttpUrl(config.getBasicUrl())
@@ -252,10 +248,7 @@ public class RestService {
       throws GetInfoAccountNullException, GetInfoAccountBadRequestException,
           CustomerIdNotCorrectlyException, SandboxInternalErrorException {
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    headers.set(AUTH_SCHEMA, config.getAuthSchema());
-    headers.set(API_KEY, config.getApiKey());
+    HttpHeaders headers = createHeader();
 
     final String url =
         UriComponentsBuilder.fromHttpUrl(config.getBasicUrl())
@@ -314,17 +307,13 @@ public class RestService {
     }
   }
 
-  public String postBonifico(String accountId)
+  public String postBonifico(String accountId, String iban, BonificoRequestDto bonificoRequestDto)
       throws GetInfoAccountNullException, GetInfoAccountBadRequestException,
           CustomerIdNotCorrectlyException, SandboxInternalErrorException {
 
     RestTemplate restTemplate = new RestTemplate();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    headers.set(AUTH_SCHEMA, config.getAuthSchema());
-    headers.set(API_KEY, config.getApiKey());
-    headers.set(X_TIME_ZONE, EUROPE_ROME);
+    HttpHeaders headers = createHeader();
 
     final String url =
         UriComponentsBuilder.fromHttpUrl(config.getBasicUrl())
@@ -394,5 +383,15 @@ public class RestService {
         restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
     return response.getBody();
+  }
+
+  private HttpHeaders createHeader() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    headers.set(AUTH_SCHEMA, config.getAuthSchema());
+    headers.set(API_KEY, config.getApiKey());
+    headers.set(X_TIME_ZONE, EUROPE_ROME);
+
+    return headers;
   }
 }
