@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} [${LOG_LEVEL_PATTERN:-%5p}] - [%logger{36}:%L-%t] - %m%n"/>
+
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} [${LOG_LEVEL_PATTERN:-%5p}] - [%logger{36}:%L-%t] - %m%n"/>
+
+    <property name="SYSLOG_PATTERN" value="app [%5level][%logger{0}:%line-%thread] - %message%n"/>
+
+    <property name="LOGS" value="/DATA/tmp/code-banca-api/log"/>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/main.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${FILE_LOG_PATTERN}</Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/main-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="SysLog" class="ch.qos.logback.classic.net.SyslogAppender">
+        <syslogHost>localhost</syslogHost>
+        <facility>LOCAL2</facility>
+        <suffixPattern>${SYSLOG_PATTERN}</suffixPattern>
+    </appender>
+
+    <logger name="org.apache.commons.vfs2.provider.sftp.SftpClientFactory"
+            level="error" additivity="false">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="RollingFile"/>
+        <appender-ref ref="SysLog"/>
+    </logger>
+
+    <springProfile name="dev">
+        <root level="info">
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="Console"/>
+        </root>
+    </springProfile>
+    <springProfile name="stage">
+        <root level="info">
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="Console"/>
+        </root>
+    </springProfile>
+    <springProfile name="prod">
+        <root level="info">
+            <!--            <appender-ref ref="RollingFile"/>-->
+            <appender-ref ref="SysLog"/>
+        </root>
+    </springProfile>
+
+
+</configuration>
