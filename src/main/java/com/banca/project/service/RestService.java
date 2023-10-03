@@ -175,10 +175,7 @@ public class RestService {
     log.info("Calling banking transactions service [{}]", url);
 
     try {
-      ResponseEntity<String> response =
-          restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
-
-      String json = response.getBody();
+      String json = getMethod(url, headers);
 
       TransactionsBankResponse transactionsBankResponse =
           this.gson.fromJson(json, TransactionsBankResponse.class);
@@ -255,8 +252,6 @@ public class RestService {
       throws GetInfoAccountNullException, GetInfoAccountBadRequestException,
           CustomerIdNotCorrectlyException, SandboxInternalErrorException {
 
-    RestTemplate restTemplate = new RestTemplate();
-
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     headers.set(AUTH_SCHEMA, config.getAuthSchema());
@@ -272,10 +267,8 @@ public class RestService {
     log.info("Calling banking info service [{}]", url);
 
     try {
-      ResponseEntity<String> response =
-          restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
-      String json = response.getBody();
+      String json = getMethod(url, headers);
 
       AccountInfoResponse accountInfoResponse = this.gson.fromJson(json, AccountInfoResponse.class);
 
@@ -391,5 +384,15 @@ public class RestService {
       log.warn("Cannot banking account id [{}] data", accountId, e);
       throw new SandboxInternalErrorException("sandbox internal error", "internal_error");
     }
+  }
+
+  private String getMethod(String url, HttpHeaders headers) {
+
+    RestTemplate restTemplate = new RestTemplate();
+
+    ResponseEntity<String> response =
+        restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
+
+    return response.getBody();
   }
 }
