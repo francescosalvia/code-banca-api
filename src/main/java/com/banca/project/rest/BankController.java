@@ -1,6 +1,8 @@
 package com.banca.project.rest;
 
 import com.banca.project.dto.request.BonificoRequestDto;
+import com.banca.project.dto.response.BonificoResponse;
+import com.banca.project.dto.response.GenericRestEntityResponse;
 import com.banca.project.dto.response.PayloadTransactionsResponse;
 import com.banca.project.exception.*;
 import com.banca.project.service.RestService;
@@ -30,7 +32,7 @@ public class BankController {
 
   @GetMapping(value = "balance")
   @ApiOperation(value = "get balance by account id")
-  public ResponseEntity getCashAccount(@RequestParam String accountId) {
+  public ResponseEntity<GenericRestEntityResponse> getCashAccount(@RequestParam String accountId) {
 
     log.info("Request balance for accountId -> [{}]", accountId);
 
@@ -40,23 +42,27 @@ public class BankController {
 
       double balance = restService.getBalance(accountId);
 
-      return ResponseEntity.ok().body(balance);
+      return ResponseEntity.ok(GenericRestEntityResponse.ok(balance));
 
     } catch (CustomerIdNotCorrectlyException e) {
 
-      return ResponseEntity.badRequest().body("account_id_not_valid");
+      return ResponseEntity.badRequest()
+          .body(GenericRestEntityResponse.badRequest("account_id_not_valid"));
     } catch (GetBalanceNullException e) {
-      return ResponseEntity.badRequest().body("balance_error");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("balance_error")));
     } catch (SandboxInternalErrorException e) {
-      return ResponseEntity.badRequest().body("internal_error");
+      return ResponseEntity.internalServerError()
+          .body((GenericRestEntityResponse.internalServerError("internal_error")));
     } catch (GetBalanceBadRequestException e) {
-      return ResponseEntity.badRequest().body("response_not_acceptable");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("response_not_acceptable")));
     }
   }
 
   @GetMapping(value = "transactions")
   @ApiOperation(value = "Get transactions by account id")
-  public ResponseEntity getTransactionAccount(
+  public ResponseEntity<GenericRestEntityResponse> getTransactionAccount(
       @RequestParam String accountId,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate) {
@@ -76,26 +82,31 @@ public class BankController {
       List<PayloadTransactionsResponse> transactions =
           restService.getTransactions(accountId, fromDate, toDate);
 
-      return ResponseEntity.ok().body(transactions);
+      return ResponseEntity.ok(GenericRestEntityResponse.ok(transactions));
 
     } catch (CustomerIdNotCorrectlyException e) {
 
-      return ResponseEntity.badRequest().body("account_id_not_valid");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("account_id_not_valid")));
     } catch (EndDateNotCorrectlyException e) {
 
-      return ResponseEntity.badRequest().body("end_date_not_correctly");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("end_date_not_correctly")));
     } catch (GetBalanceNullException e) {
-      return ResponseEntity.badRequest().body("balance_error");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("balance_error")));
     } catch (SandboxInternalErrorException e) {
-      return ResponseEntity.badRequest().body("internal_error");
+      return ResponseEntity.internalServerError()
+          .body((GenericRestEntityResponse.internalServerError("internal_error")));
     } catch (GetBalanceBadRequestException e) {
-      return ResponseEntity.badRequest().body("response_not_acceptable");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("response_not_acceptable")));
     }
   }
 
   @PostMapping(value = "bonifico")
   @ApiOperation(value = "post bonifico by account id")
-  public ResponseEntity postBonifico(
+  public ResponseEntity<GenericRestEntityResponse> postBonifico(
       @RequestParam String accountId, @Valid @RequestBody BonificoRequestDto bonificoRequestDto) {
 
     log.info(
@@ -107,20 +118,30 @@ public class BankController {
 
       restService.checkIdCustomer(accountId);
 
+      restService.isValidDate(bonificoRequestDto.getExecutionDate());
+
       String iban = restService.getAccountInfo(accountId);
 
-      // restService.postBonifico(accountId, iban, creditorRequestDto);
+      BonificoResponse returnFromBonifico =
+          restService.postBonifico(accountId, iban, bonificoRequestDto);
 
-      return ResponseEntity.ok().body("");
+      return ResponseEntity.ok(GenericRestEntityResponse.ok(returnFromBonifico));
     } catch (CustomerIdNotCorrectlyException e) {
 
-      return ResponseEntity.badRequest().body("account_id_not_valid");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("account_id_not_valid")));
     } catch (GetInfoAccountNullException e) {
-      return ResponseEntity.badRequest().body("info_account_error");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("info_account_error")));
     } catch (SandboxInternalErrorException e) {
-      return ResponseEntity.badRequest().body("internal_error");
+      return ResponseEntity.internalServerError()
+          .body((GenericRestEntityResponse.internalServerError("internal_error")));
     } catch (GetInfoAccountBadRequestException e) {
-      return ResponseEntity.badRequest().body("response_not_acceptable");
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("response_not_acceptable")));
+    } catch (DateNotCorrectlyException e) {
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("execution_date_not_valid")));
     }
   }
 }

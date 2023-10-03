@@ -1,6 +1,6 @@
 package com.banca.project.dto.request;
 
-import com.banca.project.model.Account;
+import com.banca.project.model.Creditor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -11,10 +11,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class BonificoRequestDto {
 
-  @NotBlank(message = "'name' is mandatory")
-  String name;
-
-  Account account;
+  @NotNull(message = "'creditor' is mandatory")
+  Creditor creditor;
 
   @NotBlank(message = "'description' is mandatory")
   String description;

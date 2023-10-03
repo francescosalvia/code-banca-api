@@ -14,10 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class ControllerExceptionResponse {
-    private final String message;
-    private final String code;
-    private List<DetailError> detailErrorList;
+  private final String message;
+  private final String code;
+  private List<DetailError> detailErrorList;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private final ZonedDateTime dateTime;
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private final ZonedDateTime dateTime;
 }

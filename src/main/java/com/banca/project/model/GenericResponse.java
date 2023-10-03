@@ -11,6 +11,6 @@ import java.util.ArrayList;
 @SuperBuilder
 public class GenericResponse {
 
-    private String status;
-    private ArrayList<String> error;
+  private String status;
+  private ArrayList<String> error;
 }

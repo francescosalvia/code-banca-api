@@ -1,7 +1,7 @@
 package com.banca.project.mapper;
 
-import com.banca.project.entity.Transaction;
 import com.banca.project.dto.response.PayloadTransactionsResponse;
+import com.banca.project.entity.Transaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

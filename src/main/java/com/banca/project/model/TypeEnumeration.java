@@ -7,5 +7,4 @@ public class TypeEnumeration {
 
   private String enumeration;
   private String value;
-
 }
