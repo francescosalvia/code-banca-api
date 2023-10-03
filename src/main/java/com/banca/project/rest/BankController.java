@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/v1/")
 @CrossOrigin(origins = "${app.cross.origin}")
 @Slf4j
 public class BankController {
