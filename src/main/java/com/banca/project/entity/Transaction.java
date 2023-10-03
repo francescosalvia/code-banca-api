@@ -64,4 +64,6 @@ public class Transaction {
   @Column(name = "value")
   private String value;
 
+  @Column(name = "account_id")
+  private String accountId;
 }

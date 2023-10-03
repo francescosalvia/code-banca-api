@@ -12,8 +12,10 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `amount` DECIMAL(20,2) NULL DEFAULT NULL,
   `currency`  VARCHAR(255) DEFAULT NULL,
   `description` VARCHAR(255) DEFAULT NULL,
+    `account_id` VARCHAR(255) DEFAULT NULL,
   `dt_insert` datetime DEFAULT CURRENT_TIMESTAMP,
   `dt_update` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `transaction_id` (`transaction_id`)
+  UNIQUE KEY `transaction_id` (`transaction_id`),
+  	INDEX `account_id` (`account_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -191,7 +191,7 @@ public class RestService {
           accountId,
           transactionsBankResponse.getPayload().getList().size());
 
-      saveHistoryTransaction(transactionsBankResponse.getPayload().getList());
+      saveHistoryTransaction(transactionsBankResponse.getPayload().getList(), accountId);
 
       return transactionsBankResponse.getPayload().getList();
 
@@ -231,7 +231,7 @@ public class RestService {
   }
 
   private void saveHistoryTransaction(
-      List<PayloadTransactionsResponse> payloadTransactionsResponseList) {
+      List<PayloadTransactionsResponse> payloadTransactionsResponseList, String accountId) {
 
     List<Transaction> transactionList =
         transactionMapper.toTransactionList(payloadTransactionsResponseList);
@@ -239,6 +239,7 @@ public class RestService {
     List<Transaction> newTransactionToSave = new ArrayList<>();
 
     for (Transaction transaction : transactionList) {
+      transaction.setAccountId(accountId);
       Optional<Transaction> transactionOptional =
           transactionRepository.findByTransactionId(transaction.getTransactionId());
 
