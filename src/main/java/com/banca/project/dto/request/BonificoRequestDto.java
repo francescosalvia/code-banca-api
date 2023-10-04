@@ -4,6 +4,7 @@ import com.banca.project.model.Creditor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 public class BonificoRequestDto {
 
   @NotNull(message = "'creditor' is mandatory")
+  @Valid
   Creditor creditor;
 
   @NotBlank(message = "'description' is mandatory")

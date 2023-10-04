@@ -89,7 +89,6 @@ public class BankController {
       return ResponseEntity.badRequest()
           .body((GenericRestEntityResponse.badRequest("account_id_not_valid")));
     } catch (EndDateNotCorrectlyException e) {
-
       return ResponseEntity.badRequest()
           .body((GenericRestEntityResponse.badRequest("end_date_not_correctly")));
     } catch (GetBalanceNullException e) {
@@ -101,6 +100,9 @@ public class BankController {
     } catch (GetBalanceBadRequestException e) {
       return ResponseEntity.badRequest()
           .body((GenericRestEntityResponse.badRequest("response_not_acceptable")));
+    } catch (DateNotCorrectlyException e) {
+      return ResponseEntity.badRequest()
+          .body((GenericRestEntityResponse.badRequest("ivalid_date_format")));
     }
   }
 

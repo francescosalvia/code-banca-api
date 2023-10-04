@@ -155,8 +155,8 @@ public class RestService {
 
   public List<PayloadTransactionsResponse> getTransactions(
       String accountId, LocalDate startDate, LocalDate endDate)
-      throws GetBalanceNullException, GetBalanceBadRequestException, SandboxInternalErrorException,
-          CustomerIdNotCorrectlyException {
+          throws GetBalanceNullException, GetBalanceBadRequestException, SandboxInternalErrorException,
+          CustomerIdNotCorrectlyException, DateNotCorrectlyException {
 
     HttpHeaders headers = createHeader();
 
@@ -215,6 +215,15 @@ public class RestService {
             throw new CustomerIdNotCorrectlyException(
                 "account id is not correct", "account_id_not_valid");
           }
+
+          if (StringUtils.equalsIgnoreCase(error.getCode(), "REQ017")
+                  && StringUtils.equalsIgnoreCase(
+                  error.getDescription(), "Invalid date format")) {
+            log.error(error.getDescription());
+            throw new DateNotCorrectlyException(
+                    "Invalid date format", "invalid_date_format");
+          }
+
         }
       }
 
