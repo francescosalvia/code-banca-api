@@ -24,7 +24,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -422,7 +425,7 @@ public class RestService {
     }
   }
 
-  private String getMethod(String url, HttpHeaders headers) {
+  public String getMethod(String url, HttpHeaders headers) {
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -442,11 +445,10 @@ public class RestService {
     return headers;
   }
 
-  public boolean isValidDate(String dateString) throws DateNotCorrectlyException {
+  public void isValidDate(String dateString) throws DateNotCorrectlyException {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     try {
-      Date date = sdf.parse(dateString);
-      return date != null;
+      sdf.parse(dateString);
     } catch (ParseException e) {
       log.error("executionDate from bonifico request not valid [{}] data", dateString);
       throw new DateNotCorrectlyException("sandbox internal error", "internal_error");

@@ -63,4 +63,19 @@ class BankRestTest {
 
     assertEquals(code, customerIdNotCorrectlyException.getCode());
   }
+
+  @Test
+  void testGetMethodWithIdNotValid() {
+
+    String code = "account_id_not_valid";
+
+    CustomerIdNotCorrectlyException customerIdNotCorrectlyException =
+        assertThrows(
+            CustomerIdNotCorrectlyException.class,
+            () -> {
+              restService.getBalance("null");
+            });
+
+    assertEquals(code, customerIdNotCorrectlyException.getCode());
+  }
 }

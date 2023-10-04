@@ -2,6 +2,10 @@ Project name: code-bank-api
 
 Progetto per test tecnico.
 
+NB: nel caso liquibase dovesse dare problemi è possibile settarlo a false e copiare la creazione della tabella
+direttamente dalla cartella
+resources/db.changelog/schema/000_db.changelog.mysql.sql
+
 Per eseguire le chiamate è possibile usare lo swagger -> http://localhost:8080/swagger-ui/index.html
 
 Oppure Postman
