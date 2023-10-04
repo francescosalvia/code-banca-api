@@ -1,0 +1,107 @@
+﻿Richiesta:
+Realizzare controller rest con 3 chiamate
+* get saldo
+* get lista transazioni
+* post bonifiico
+
+
+Approccio all’esercizio:
+
+
+Capire tramite la documentazione le chiamate da eseguire e di conseguenza request e response che potrei aspettarmi.
+
+
+Primo chiamata
+
+
+Operazione: Lettura saldo
+
+
+Url: 
+https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/{accountId}/balance 
+
+
+Input: {accountId}:Long è un parametro dell’applicazione;
+Output: Visualizzare il saldo
+In questo caso si parla di saldo per cui farò vedere il saldo totale e non quello disponibile!
+
+
+Espongo all’esterno una chiamata Get con parametro l’account id.
+
+
+Successivamente predispongo all’interno del servizio che eseguirà la chiamata vari controlli sia per la verifica dell’account id sia per eventuali errori che potrei incontrare.
+
+
+Per le chiamate verrà usato RestTemplate
+Tutte le informazioni dell’header quali AUTH_SCHEMA e Api_key sono state settate per comodità direttamente nell’application.properties dato che sono fisse, almeno per questo test.
+
+
+Leggo la risposta della chiamata ed espongo il risultato.
+
+
+
+
+
+
+Operazione: Lettura Transazioni
+API: https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/{accountId}/payments/money-transfers
+Input:
+
+
+o {accountId}:Long è un parametro dell’applicazione;
+o {fromAccountingDate}=2019-01-01
+o {toAccountingDate}=2019-12-01
+
+
+Output: Lista delle transazioni, nelle date suggerite su esempio sono presenti movimenti.
+Anche qua molto simile al precedente, se non che salviamo le transazioni a db.
+
+
+Con l’idea di salvare a db, ho predisposto un’entity e la creazione con liquibase dell’entità all’avvio del progetto.
+
+
+Per velocizzare la mappatura tra la response e l’entity ho predisposto anche un mapper!
+
+
+La logica che c’è dietro il salvataggio è stata quella grazie anche all’utilizzo dei repository, di ciclare le transazioni in response alla chiamata verificare tramite transactionId che secondo la documentazione è chiave univoca se a db è presente o meno questa transazione se si eseguirò un update altriementi l’aggiungo ad un arrayList che successivamente salverà tutte le nuove transazioni riferite al cliente.
+
+
+Qua ho pensato anche di aggiungere il campo accountId alle transazioni poichè nel caso dovessimo avere piu clienti posso avere una chiave di join per differenziarle.
+
+
+
+
+Operazione: Bonifico
+
+
+https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/{accountId}/payments/money-transfers 
+
+
+Input (usare per valorizzare il json della chiamata):
+o {accountId}:Long è un parametro dell’applicazione;
+o {creditor.name}:String, è il beneficiario del bonifico;
+o {creditor.account.accountCode}:String, iban del beneficiario;
+o {description}: String, descrizione del bonifico
+o {currency}:String
+o {amount}:String
+o {executionDate}:String YYYY-MM-DD
+Nota: fare riferimento alla documentazione e popolare tutti i campi required
+Output: Stato dell’operazione, il bonifico avrà esito KO per una limitazione del conto di
+prova.
+
+
+
+
+Qua simile alle altre due se non per alcune differenze, primo una Post e non una get
+secondo abbiamo un body.
+
+
+Qua ho delle piccole note ovvero, è difficile testare l’applicazione senza un json di esempio, ho testato anche con quello fornito dalla documentazione ma non andava!
+Ho utilizzato le poche informazioni che avevo in mio possesso, inoltre accountCode se non specificato l’ho recuperato tramite get cash account purtroppo non avendo valori da utilizzare era difficile trovare l’errore corretto.
+
+
+
+
+Ultima nota:
+per questa richiesta Il risultato deve essere auto-contenuto (non dipendenze a db o sistemi esterni, si per db in memory)
+non ho utilizzato docker per creare db temporanei per i test pensando fosse ritenuto come db esterno però non vorrei aver frainteso.
